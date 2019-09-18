@@ -1,0 +1,1 @@
+{ "name": "com.gameframe.assetcache.Editor.Tests", "references": [ "com.gameframe.assetcache" ], "optionalUnityReferences": ["TestAssemblies"], "includePlatforms": [ "Editor" ], "excludePlatforms": [] }

@@ -1,0 +1,1 @@
+{ "name": "com.gameframe.assetcache.Editor", "references": [ "com.gameframe.assetcache" ], "optionalUnityReferences": [], "includePlatforms": [ "Editor" ], "excludePlatforms": [] }
