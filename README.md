@@ -16,7 +16,7 @@ Find the manifest.json file in the Packages folder of your project and edit it t
 ```js
 {
   "dependencies": {
-    "com.gameframe.assetcache": "https://github.com/coryleach/UnityAssetCache.git#1.0.1",
+    "com.gameframe.assetcache": "https://github.com/coryleach/UnityAssetCache.git#1.0.0",
     ...
   },
 }
