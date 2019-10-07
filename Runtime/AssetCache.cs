@@ -17,7 +17,7 @@ namespace Cache
             TAssetType Asset { get; }
             int RefCount { get; }
         }
-        
+
         protected class AssetCacheEntry : IDisposable
         {
             private string url;
@@ -32,9 +32,9 @@ namespace Cache
             public Task<TAssetType> Task => task;
 
             private Action<TAssetType> assetDestroyer;
-            
+
             private bool disposed = false;
-        
+
             public AssetCacheEntry(string url, Task<TAssetType> getAssetTask, Action<TAssetType> assetDestroyer)
             {
                 this.url = url;
@@ -76,7 +76,6 @@ namespace Cache
                     throw new InvalidOperationException("AssetCacheEntry already disposed");
                 }
                 disposed = true;
-                UnityEngine.Debug.Log($"Disposed and destroying {url}");
                 if (!task.IsCompleted)
                 {
                     task.ContinueWith((assetTask) => { assetDestroyer(assetTask.Result); }, TaskContinuationOptions.OnlyOnRanToCompletion);
@@ -105,7 +104,7 @@ namespace Cache
             {
                 return new CachedAsset(cacheEntry);
             }
-            
+
             public TAssetType Asset
             {
                 get
@@ -126,7 +125,6 @@ namespace Cache
                 {
                     throw new InvalidOperationException("CachedAsset has already been disposed");
                 }
-
                 disposed = true;
                 cacheEntry.Decrement();
             }
@@ -148,7 +146,7 @@ namespace Cache
             get => assetDestroyer;
             set => assetDestroyer = value;
         }
-        
+
         private async Task<TAssetType> LocateAssetAsync(string url)
         {
             var asset = await AssetLocator(url);
@@ -176,7 +174,7 @@ namespace Cache
         public void ClearUnusedAssets()
         {
             //Remove Unused entries
-            var unusedEntries = dictionary.Where((pair) => pair.Value.RefCount <= 0).ToList();
+            var unusedEntries = dictionary.Where((pair) => (pair.Value.RefCount <= 0)).ToList();
             foreach (var pair in unusedEntries)
             {
                 dictionary.Remove(pair.Key);
