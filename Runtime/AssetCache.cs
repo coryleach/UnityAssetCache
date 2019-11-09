@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Cache
+namespace Gameframe.AssetCache
 {
     /// <summary>
     /// Maintains a cache of assets
@@ -11,6 +11,10 @@ namespace Cache
     /// <typeparam name="TAssetType">The kind of asset to be cached</typeparam>
     public class AssetCache<TAssetType> where TAssetType : UnityEngine.Object
     {
+        /// <summary>
+        /// Reference to a cached asset.
+        /// Dispose() should be called to release the asset reference.
+        /// </summary>
         public interface ICachedAsset : IDisposable
         {
             ICachedAsset Clone();
@@ -20,31 +24,31 @@ namespace Cache
 
         protected class AssetCacheEntry : IDisposable
         {
-            private string url;
-            public string Url => url;
+            private readonly string _assetPath;
+            public string AssetPath => _assetPath;
 
-            private int refCount = 0;
-            public int RefCount => refCount;
+            private int _refCount = 0;
+            public int RefCount => _refCount;
 
-            public TAssetType Asset => task?.Result;
+            public TAssetType Asset => _task?.Result;
 
-            private Task<TAssetType> task;
-            public Task<TAssetType> Task => task;
+            private Task<TAssetType> _task;
+            public Task<TAssetType> Task => _task;
 
-            private Action<TAssetType> assetDestroyer;
+            private readonly Action<TAssetType> _assetDestroyer;
 
-            private bool disposed = false;
+            private bool _disposed = false;
 
-            public AssetCacheEntry(string url, Task<TAssetType> getAssetTask, Action<TAssetType> assetDestroyer)
+            public AssetCacheEntry(string assetPath, Task<TAssetType> getAssetTask, Action<TAssetType> assetDestroyer)
             {
-                this.url = url;
-                this.assetDestroyer = assetDestroyer;
-                task = getAssetTask;
+                _assetPath = assetPath;
+                _assetDestroyer = assetDestroyer;
+                _task = getAssetTask;
             }
 
             public CachedAsset GetCachedAsset()
             {
-                if (disposed)
+                if (_disposed)
                 {
                     throw new InvalidOperationException("AssetCacheEntry cannot get asset after dispose.");
                 }
@@ -53,113 +57,114 @@ namespace Cache
 
             public void Increment()
             {
-                if (disposed)
+                if (_disposed)
                 {
                     throw new InvalidOperationException("AssetCacheEntry cannot increment after dispose.");
                 }
-                refCount++;
+                _refCount++;
             }
 
             public void Decrement()
             {
-                if (disposed)
+                if (_disposed)
                 {
                     throw new InvalidOperationException("AssetCacheEntry cannot decrement after dispose.");
                 }
-                refCount--;
+                _refCount--;
             }
 
             public void Dispose()
             {
-                if (disposed)
+                if (_disposed)
                 {
                     throw new InvalidOperationException("AssetCacheEntry already disposed");
                 }
-                disposed = true;
-                if (!task.IsCompleted)
+                _disposed = true;
+                if (!_task.IsCompleted)
                 {
-                    task.ContinueWith((assetTask) => { assetDestroyer(assetTask.Result); }, TaskContinuationOptions.OnlyOnRanToCompletion);
+                    _task.ContinueWith((assetTask) => { _assetDestroyer(assetTask.Result); }, TaskContinuationOptions.OnlyOnRanToCompletion);
                 }
                 else
                 {
-                    assetDestroyer(task.Result);
+                    _assetDestroyer(_task.Result);
                 }
-                task = null;
+                _task = null;
             }
         }
 
         protected class CachedAsset : ICachedAsset
         {
-            private readonly AssetCacheEntry cacheEntry;
-            private bool disposed;
+            private readonly AssetCacheEntry _cacheEntry;
+            private bool _disposed;
 
             public CachedAsset(AssetCacheEntry entry)
             {
-                disposed = false;
-                cacheEntry = entry;
-                cacheEntry.Increment();
+                _disposed = false;
+                _cacheEntry = entry;
+                _cacheEntry.Increment();
             }
 
             public ICachedAsset Clone()
             {
-                return new CachedAsset(cacheEntry);
+                return new CachedAsset(_cacheEntry);
             }
 
             public TAssetType Asset
             {
                 get
                 {
-                    if (disposed)
+                    if (_disposed)
                     {
                         throw new InvalidOperationException("CachedAsset has been disposed");
                     }
-                    return cacheEntry.Asset;
+                    return _cacheEntry.Asset;
                 }
             }
 
-            public int RefCount => cacheEntry.RefCount;
+            public int RefCount => _cacheEntry.RefCount;
 
             public void Dispose()
             {
-                if (disposed)
+                if (_disposed)
                 {
                     throw new InvalidOperationException("CachedAsset has already been disposed");
                 }
-                disposed = true;
-                cacheEntry.Decrement();
+                _disposed = true;
+                _cacheEntry.Decrement();
             }
         }
 
-        protected Dictionary<string, AssetCacheEntry> dictionary = new Dictionary<string, AssetCacheEntry>();
+        protected readonly Dictionary<string, AssetCacheEntry> CacheDictionary = new Dictionary<string, AssetCacheEntry>();
 
-        private Func<string, Task<TAssetType>> assetLocator = null;
-
-        public Func<string, Task<TAssetType>> AssetLocator
+        private readonly IAssetLoader<TAssetType> _assetLoader;
+        
+        private async Task<TAssetType> LocateAssetAsync(string assetPath)
         {
-            get => assetLocator;
-            set => assetLocator = value;
-        }
-
-        private Action<TAssetType> assetDestroyer = null;
-        public Action<TAssetType> AssetDestroyer
-        {
-            get => assetDestroyer;
-            set => assetDestroyer = value;
-        }
-
-        private async Task<TAssetType> LocateAssetAsync(string url)
-        {
-            var asset = await AssetLocator(url);
+            var asset = await _assetLoader.LoadAsync(assetPath);
             return asset;
         }
+        
+        /// <summary>
+        /// AssetCache Constructor
+        /// </summary>
+        /// <param name="loader">loads and unloads assets</param>
+        public AssetCache(IAssetLoader<TAssetType> loader)
+        {
+            _assetLoader = loader;
+        }
 
-        public async Task<ICachedAsset> GetAsync(string url)
+        /// <summary>
+        /// Get Cached Asset
+        /// </summary>
+        /// <param name="assetPath">Path to asset. Should be handle-able by the asset locator</param>
+        /// <returns>Task that returns the cached asset</returns>
+        public async Task<ICachedAsset> GetAsync(string assetPath)
         {
             //Get or create cache entry
-            if (!dictionary.TryGetValue(url, out var entry))
+            if (!CacheDictionary.TryGetValue(assetPath, out var entry))
             {
-                entry = new AssetCacheEntry(url, LocateAssetAsync(url), assetDestroyer);
-                dictionary.Add(url, entry);
+                entry = new AssetCacheEntry(assetPath, LocateAssetAsync(assetPath), _assetLoader.Unload);
+                CacheDictionary.Add(assetPath, entry);
             }
 
             //Wait for the task to finish
@@ -171,15 +176,19 @@ namespace Cache
             return entry.GetCachedAsset();
         }
 
+        /// <summary>
+        /// Called to clean up and unload assets that have no remaining references
+        /// </summary>
         public void ClearUnusedAssets()
         {
             //Remove Unused entries
-            var unusedEntries = dictionary.Where((pair) => (pair.Value.RefCount <= 0)).ToList();
+            var unusedEntries = CacheDictionary.Where((pair) => (pair.Value.RefCount <= 0)).ToList();
             foreach (var pair in unusedEntries)
             {
-                dictionary.Remove(pair.Key);
+                CacheDictionary.Remove(pair.Key);
                 pair.Value.Dispose();
             }
         }
+        
     }
 }

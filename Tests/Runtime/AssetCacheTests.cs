@@ -1,36 +1,35 @@
 ﻿using System;
 using System.Collections;
-using System.Collections.Generic;
-using System.ComponentModel.Design;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
 
-namespace Cache.Tests
+namespace Gameframe.AssetCache.Tests
 {
     public class AssetCacheTests
     {
+        private class TestTextureLoader : IAssetLoader<Texture2D>
+        {
+            public Task<Texture2D> LoadAsync(string s)
+            {
+                Texture2D tex = new Texture2D(32, 32);
+                return Task.Run(() =>
+                {
+                    Task.Delay(100);
+                    return tex;
+                });
+            }
+
+            public void Unload(Texture2D asset)
+            {
+                UnityEngine.Object.Destroy(asset);
+            }
+        }
+        
         private AssetCache<Texture2D> CreateCache()
         {
-            var cache = new AssetCache<Texture2D>
-            {
-                //Assign a locator that gets a texture with a little bit of a delay to simulate network delay
-                AssetLocator = delegate(string s)
-                {
-                    Texture2D tex = new Texture2D(32, 32);
-                    return Task.Run(() =>
-                    {
-                        Task.Delay(100);
-                        return tex;
-                    });
-                },
-                AssetDestroyer = delegate(Texture2D tex)
-                {
-                    UnityEngine.Object.Destroy(tex);
-                    Resources.UnloadAsset(tex);
-                }
-            };
+            var cache = new AssetCache<Texture2D>(new TestTextureLoader());
             return cache;
         }
         
@@ -166,12 +165,7 @@ namespace Cache.Tests
         public IEnumerator CanClean()
         {
             var cache = CreateCache();
-            cache.AssetDestroyer = delegate(Texture2D texture)
-            {
-                UnityEngine.Object.Destroy(texture);
-                Debug.Log("Destroyed!");
-            };
-                
+
             var url = "txone";
             var cachedAssetTask = cache.GetAsync(url);
 
