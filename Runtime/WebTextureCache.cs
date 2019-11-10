@@ -35,7 +35,7 @@ namespace Gameframe.AssetCache
 
         public void Unload(Texture2D asset)
         {
-            Resources.UnloadAsset(asset);
+            UnityEngine.Object.Destroy(asset);
         }
     }
 
