@@ -15,7 +15,7 @@
 var cache = new WebTextureCache();
 
 //Get a cached asset asynchronously
-var cachedAsset = await Cache.GetAsync(url);
+var cachedAsset = await cache.GetAsync(url);
 
 //Use the asset
 image.texture = cachedAsset.Asset;
