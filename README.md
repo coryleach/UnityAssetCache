@@ -42,11 +42,6 @@ Find the manifest.json file in the Packages folder of your project and edit it t
 }
 ```
 
-##### Requirement
-
-* Unity 2019.1 or later (Tested in Unity 2019.1)
-* No other SDK are required
-
 ## Author
 
 👤 **Cory Leach**
