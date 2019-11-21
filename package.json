@@ -1,14 +1,12 @@
 {
-    "name": "com.gameframe.assetcache",
-    "displayName": "Gameframe.AssetCache",
-    "version": "1.0.0",
-    "description": "Asset cache library",
-    "unity": "",
-    "unityRelease": "",
-    "keywords": [],
-    "author": {
-        "name": "Cory Leach",
-        "email": "cory.leach@gmail.com",
-        "url": "https://coryleach.info"
-    }
+  "name": "com.gameframe.assetcache",
+  "displayName": "Gameframe.AssetCache",
+  "version": "1.0.1",
+  "description": "Asset cache library",
+  "keywords": [],
+  "author": {
+    "name": "Cory Leach",
+    "email": "cory.leach@gmail.com",
+    "url": "https://coryleach.info"
+  }
 }

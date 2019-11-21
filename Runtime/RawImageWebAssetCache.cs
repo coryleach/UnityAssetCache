@@ -37,7 +37,7 @@ namespace Gameframe.AssetCache
             {
                 return;
             }
-
+            
             var task = Cache.GetAsync(url);
             await task;
 
