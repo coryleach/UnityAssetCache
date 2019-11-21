@@ -8,6 +8,20 @@
 
 > Library for caching and unloading assets
 
+## Quick Package Install
+
+#### Using UnityPackageManager (for Unity 2019.1 or later)
+
+Find the manifest.json file in the Packages folder of your project and edit it to look like this:
+```js
+{
+  "dependencies": {
+    "com.gameframe.assetcache": "https://github.com/coryleach/UnityAssetCache.git#1.0.1",
+    ...
+  },
+}
+```
+
 ## Usage
 
 ```c#
@@ -26,20 +40,6 @@ cachedAsset = null;
 
 //Clean the cache so all assets with zero references are unloaded
 cache.ClearUnusedAssets();
-```
-
-## Install
-
-#### Using UnityPackageManager (for Unity 2019.1 or later)
-
-Find the manifest.json file in the Packages folder of your project and edit it to look like this:
-```js
-{
-  "dependencies": {
-    "com.gameframe.assetcache": "https://github.com/coryleach/UnityAssetCache.git#1.0.1",
-    ...
-  },
-}
 ```
 
 ## Author
