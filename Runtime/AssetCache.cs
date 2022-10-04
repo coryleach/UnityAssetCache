@@ -9,7 +9,7 @@ namespace Gameframe.AssetCache
     /// Maintains a cache of assets
     /// </summary>
     /// <typeparam name="TAssetType">The kind of asset to be cached</typeparam>
-    public class AssetCache<TAssetType> where TAssetType : UnityEngine.Object
+    public class AssetCache<TAssetType> where TAssetType : class
     {
         /// <summary>
         /// Reference to a cached asset.
@@ -137,13 +137,13 @@ namespace Gameframe.AssetCache
         protected readonly Dictionary<string, AssetCacheEntry> CacheDictionary = new Dictionary<string, AssetCacheEntry>();
 
         private readonly IAssetLoader<TAssetType> _assetLoader;
-        
+
         private async Task<TAssetType> LocateAssetAsync(string assetPath)
         {
             var asset = await _assetLoader.LoadAsync(assetPath);
             return asset;
         }
-        
+
         /// <summary>
         /// AssetCache Constructor
         /// </summary>
@@ -189,6 +189,6 @@ namespace Gameframe.AssetCache
                 pair.Value.Dispose();
             }
         }
-        
+
     }
 }

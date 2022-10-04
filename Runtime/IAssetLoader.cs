@@ -6,7 +6,7 @@ namespace Gameframe.AssetCache
     /// Interface for loading and unloading assets in AssetCache
     /// </summary>
     /// <typeparam name="TAssetType">UnityEngine.Object asset type</typeparam>
-    public interface IAssetLoader<TAssetType> where TAssetType : UnityEngine.Object
+    public interface IAssetLoader<TAssetType> where TAssetType : class
     {
         /// <summary>
         /// Loads an asset asynchronously
