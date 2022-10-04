@@ -197,7 +197,7 @@ namespace Gameframe.AssetCache
     /// </summary>
     /// <typeparam name="TAssetType">The kind of asset to be cached</typeparam>
     /// <typeparam name="TKeyType">The key used to reference the asset to be loaded/unloaded</typeparam>
-    public class KeyedAssetCache<TKeyType,TAssetType> where TAssetType : class where TKeyType : class
+    public class KeyedAssetCache<TKeyType,TAssetType> where TAssetType : class
     {
         /// <summary>
         /// Reference to a cached asset.
