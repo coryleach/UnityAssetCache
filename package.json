@@ -1,1 +1,17 @@
-{"name":"com.gameframe.assetcache","displayName":"Gameframe.AssetCache","version":"1.0.1","description":"Library for caching and unloading assets","keywords":[],"author":{"name":"Cory Leach","email":"cory.leach@gmail.com","url":"https://coryleach.info","github":"coryleach","twitter":"coryleach","kofi":"https://ko-fi.com/coryleach"},"type":"library","repositoryName":"UnityAssetCache"}
+{
+  "name": "com.gameframe.assetcache",
+  "displayName": "Gameframe.AssetCache",
+  "version": "1.2.0",
+  "description": "Library for caching and unloading assets",
+  "keywords": [],
+  "author": {
+    "name": "Cory Leach",
+    "email": "cory.leach@gmail.com",
+    "url": "https://coryleach.info",
+    "github": "coryleach",
+    "twitter": "coryleach",
+    "kofi": "https://ko-fi.com/coryleach"
+  },
+  "type": "library",
+  "repositoryName": "UnityAssetCache"
+}
