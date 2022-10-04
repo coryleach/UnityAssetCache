@@ -18,6 +18,11 @@
 </p>
 <h1 align="center">Gameframe.AssetCache 👋</h1>
 
+<!-- BADGE-START ->
+<img align="center" src="https://raw.githubusercontent.com/coryleach/UnityPackages/master/Documentation/GameframeFace.gif" />
+</p>
+<h1 align="center">Gameframe.AssetCache 👋</h1>
+
 <!-- BADGE-START -<!-- BADGE-END -->
 
 Library for caching and unloading assets
@@ -27,7 +32,7 @@ Library for caching and unloading assets
 #### Using UnityPackageManager (for Unity 2019.3 or later)
 Open the package manager window (menu: Window > Package Manager)<br/>
 Select "Add package from git URL...", fill in the pop-up with the following link:<br/>
-https://github.com/coryleach/UnityAssetCache.git#1.2.0<br/>
+https://github.com/coryleach/UnityAssetCache.git#1.3.0<br/>
 
 #### Using UnityPackageManager (for Unity 2019.1 or later)
 
@@ -35,7 +40,7 @@ Find the manifest.json file in the Packages folder of your project and edit it t
 ```js
 {
   "dependencies": {
-    "com.gameframe.assetcache": "https://github.com/coryleach/UnityAssetCache.git#1.2.0",
+    "com.gameframe.assetcache": "https://github.com/coryleach/UnityAssetCache.git#1.3.0",
     ...
   },
 }
